@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Book Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+        }
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        .book-list {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .book {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .book h3 {
+            margin: 0;
+        }
+        .borrow-history {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .borrow-history ul {
+            list-style: none;
+            padding: 0;
+        }
+        .borrow-history li {
+            background-color: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Personal Book Library</h1>
+    </header>
+    <main>
+        <section id="add-book">
+            <h2>Add a Book</h2>
+            <form id="book-form">
+                <input type="text" id="title" placeholder="Title" required>
+                <input type="text" id="author" placeholder="Author" required>
+                <input type="text" id="category" placeholder="Category" required>
+                <button type="submit">Add Book</button>
+            </form>
+        </section>
+
+        <section id="search">
+            <h2>Search Books</h2>
+            <input type="text" id="search-input" placeholder="Search by title or author">
+        </section>
+
+        <section id="book-list" class="book-list">
+            <h2>Book List</h2>
+        </section>
+
+        <section id="borrow-history" class="borrow-history">
+            <h2>Borrowing History</h2>
+            <ul id="history-list"></ul>
+        </section>
+    </main>
+
+    <script>
+        const bookForm = document.getElementById('book-form');
+        const searchInput = document.getElementById('search-input');
+        const bookList = document.getElementById('book-list');
+        const historyList = document.getElementById('history-list');
+
+        let books = [];
+        let borrowingHistory = [];
+
+        // Event listeners
+        bookForm.addEventListener('submit', addBook);
+        searchInput.addEventListener('input', searchBooks);
+
+        // Add a new book to the library
+        function addBook(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value.trim();
+            const author = document.getElementById('author').value.trim();
+            const category = document.getElementById('category').value.trim();
+
+            if (title === '' || author === '' || category === '') {
+                alert('Please fill out all fields.');
+                return;
+            }
+
+            const book = { title, author, category, borrowed: false };
+            books.push(book);
+            displayBooks(books);
+            bookForm.reset();
+        }
+
+        // Search for books based on title or author
+        function searchBooks() {
+            const query = searchInput.value.trim().toLowerCase();
+            const filteredBooks = books.filter(book => 
+                book.title.toLowerCase().includes(query) || 
+                book.author.toLowerCase().includes(query)
+            );
+            displayBooks(filteredBooks);
+        }
+
+        // Display books in the book list section
+        function displayBooks(booksToDisplay) {
+            bookList.innerHTML = '<h2>Book List</h2>';
+            booksToDisplay.forEach((book, index) => {
+                const bookItem = document.createElement('div');
+                bookItem.className = 'book';
+                bookItem.innerHTML = `
+                    <h3>${book.title}</h3>
+                    <p>Author: ${book.author}</p>
+                    <p>Category: ${book.category}</p>
+                    <button onclick="toggleBorrow(${index})">${book.borrowed ? 'Return' : 'Borrow'}</button>
+                `;
+                bookList.appendChild(bookItem);
+            });
+        }
+
+        // Toggle the borrowed status of a book
+        function toggleBorrow(index) {
+            books[index].borrowed = !books[index].borrowed;
+            const action = books[index].borrowed ? 'borrowed' : 'returned';
+            const historyEntry = You ${action} "${books[index].title}" by ${books[index].author};
+            borrowingHistory.push(historyEntry);
+            displayBooks(books);
+            displayHistory();
+        }
+
+        // Display borrowing history
+        function displayHistory() {
+            historyList.innerHTML = '';
+            borrowingHistory.forEach(entry => {
+                const historyItem = document.createElement('li');
+                historyItem.textContent = entry;
+                historyList.appendChild(historyItem);
+            });
+        }
+    </script>
+</body>
+</html>
